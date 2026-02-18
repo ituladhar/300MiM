@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIM Comp Calculator</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            /* Dark theme (default) */
+            --bg-primary: #000000;
+            --bg-secondary: rgba(255,255,255,0.02);
+            --bg-card: rgba(255,255,255,0.03);
+            --bg-input: rgba(255,255,255,0.05);
+            --border-color: rgba(255,255,255,0.08);
+            --border-focus: #ec4899;
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255,255,255,0.5);
+            --text-muted: rgba(255,255,255,0.4);
+            --accent-pink: #ec4899;
+            --accent-purple: #a855f7;
+            --accent-cyan: #06b6d4;
+            --error: #ef4444;
+            --success: #22c55e;
+            --gradient-main: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+            --gradient-text: linear-gradient(135deg, #fff, var(--accent-pink));
+            --shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+
+        [data-theme="light"] {
+            /* Light theme */
+            --bg-primary: #f8fafc;
+            --bg-secondary: rgba(255,255,255,0.8);
+            --bg-card: rgba(255,255,255,0.9);
+            --bg-input: rgba(0,0,0,0.05);
+            --border-color: rgba(0,0,0,0.1);
+            --border-focus: #ec4899;
+            --text-primary: #0f172a;
+            --text-secondary: rgba(15,23,42,0.5);
+            --text-muted: rgba(15,23,42,0.4);
+            --accent-pink: #db2777;
+            --accent-purple: #9333ea;
+            --accent-cyan: #0891b2;
+            --error: #dc2626;
+            --success: #16a34a;
+            --gradient-main: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+            --gradient-text: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+            --shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 900px;
+            background: var(--bg-secondary);
+            backdrop-filter: blur(30px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header h1 {
+            font-size: 1.4em;
+            font-weight: 800;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 6px 12px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 0.75em;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--accent-pink);
+        }
+
+        .theme-toggle input {
+            display: none;
+        }
+
+        .toggle-icon {
+            font-size: 1.1em;
+        }
+
+        .inputs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .input-box {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .input-box label {
+            display: block;
+            font-size: 0.65em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper .currency-symbol {
+            position: absolute;
+            left: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent-pink);
+            font-weight: 600;
+            pointer-events: none;
+        }
+
+        .input-box input {
+            width: 100%;
+            padding: 8px 12px 8px 28px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+            transition: border-color 0.2s, background 0.2s;
+            -moz-appearance: textfield;
+        }
+
+        .input-box input.no-prefix {
+            padding-left: 12px;
+        }
+
+        .input-box input::-webkit-outer-spin-button,
+        .input-box input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .input-box input:focus {
+            outline: none;
+            border-color: var(--border-focus);
+        }
+
+        .badge {
+            display: inline;
+            padding: 2px 6px;
+            background: rgba(236,72,153,0.15);
+            border: 1px solid rgba(236,72,153,0.3);
+            border-radius: 4px;
+            font-size: 0.6em;
+            color: var(--accent-pink);
+            margin-left: 4px;
+            font-weight: 600;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .metric {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        .metric.main {
+            grid-column: span 2;
+            background: linear-gradient(135deg, rgba(236,72,153,0.1), rgba(168,85,247,0.1));
+            border: 1px solid rgba(236,72,153,0.3);
+        }
+
+        .metric-label {
+            font-size: 0.65em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .metric-value {
+            font-size: 1.8em;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .metric.main .metric-value {
+            font-size: 2.4em;
+            background: var(--gradient-text);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .metric-sub {
+            font-size: 0.7em;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .breakdown {
+            grid-column: span 4;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 8px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .bd-item {
+            text-align: center;
+        }
+
+        .bd-label {
+            font-size: 0.6em;
+            color: var(--text-muted);
+            margin-bottom: 3px;
+        }
+
+        .bd-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95em;
+            font-weight: 700;
+            color: var(--accent-pink);
+        }
+
+        .info-box {
+            grid-column: span 4;
+            background: rgba(168,85,247,0.08);
+            border: 1px solid rgba(168,85,247,0.25);
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 0.7em;
+            color: var(--accent-purple);
+            margin-top: 10px;
+        }
+
+        .footer {
+            margin-top: 15px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.65em;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        @media (max-width: 700px) {
+            .grid { grid-template-columns: repeat(2, 1fr); }
+            .metric.main { grid-column: span 2; }
+            .breakdown { grid-column: span 2; grid-template-columns: repeat(2, 1fr); }
+            .info-box { grid-column: span 2; }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="header">
+            <h1>MIM COMP</h1>
+            <label class="theme-toggle" title="Toggle theme">
+                <input type="checkbox" id="themeSwitch">
+                <span class="toggle-icon" id="themeIcon">🌙</span>
+                <span id="themeText">Dark</span>
+            </label>
+        </div>
+
+        <div class="inputs">
+            <div class="input-box">
+                <label>Activations</label>
+                <div class="input-wrapper">
+                    <input type="number" id="act" class="no-prefix" value="1" min="1">
+                </div>
+            </div>
+            <div class="input-box">
+                <label>MRC <span class="badge">$47</span></label>
+                <div class="input-wrapper">
+                    <span class="currency-symbol">$</span>
+                    <input type="number" id="mrc" value="47" step="0.01">
+                </div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="metric main">
+                <div class="metric-label">Total Opportunity</div>
+                <div class="metric-value" id="total">$0</div>
+                <div class="metric-sub">Upfront + 23mo residual</div>
+            </div>
+
+            <div class="metric">
+                <div class="metric-label">Per Activation</div>
+                <div class="metric-value" id="perAct">$0</div>
+                <div class="metric-sub">300% MRC + $10 spiff + 23mo residual</div>
+            </div>
+
+            <div class="metric">
+                <div class="metric-label">Upfront Total</div>
+                <div class="metric-value" id="upfront">$0</div>
+                <div class="metric-sub">120-day chargeback applies</div>
+            </div>
+
+            <div class="metric">
+                <div class="metric-label">300% MRC Total</div>
+                <div class="metric-value" id="mrcPay">$0</div>
+                <div class="metric-sub">3 × MRC × activations</div>
+            </div>
+
+            <div class="metric">
+                <div class="metric-label">Dealer Spiff Total</div>
+                <div class="metric-value" id="spiffTotal">$0</div>
+                <div class="metric-sub">$10 dealer share × activations</div>
+            </div>
+
+            <div class="metric">
+                <div class="metric-label">Monthly Residual Total</div>
+                <div class="metric-value" id="monthlyRes">$0</div>
+                <div class="metric-sub">3% of MRC × activations</div>
+            </div>
+
+            <div class="metric">
+                <div class="metric-label">23mo Residual Total</div>
+                <div class="metric-value" id="totalRes">$0</div>
+                <div class="metric-sub">No chargeback • 23 months max</div>
+            </div>
+
+            <div class="breakdown">
+                <div class="bd-item">
+                    <div class="bd-label">300% MRC (total)</div>
+                    <div class="bd-value" id="bdMrc">$0</div>
+                </div>
+                <div class="bd-item">
+                    <div class="bd-label">Dealer Spiff (total)</div>
+                    <div class="bd-value" id="bdSpiff">$0</div>
+                </div>
+                <div class="bd-item">
+                    <div class="bd-label">Frontline Share (total)</div>
+                    <div class="bd-value" id="bdFront" style="color:var(--error);">-$0</div>
+                </div>
+                <div class="bd-item">
+                    <div class="bd-label">Net Upfront (total)</div>
+                    <div class="bd-value" id="bdNet">$0</div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                💡 <strong>How it works:</strong> 300% of MRC upfront + $20 spiff (50% to dealer = $10) + 3% monthly residual for up to 23 months. All upfront payments subject to 120-day chargeback. Residuals have NO chargeback.
+            </div>
+        </div>
+
+        <div class="footer">
+            <span>Effective: 2/1/26-2/28/26 • Smartphone Equality eligible accounts only</span>
+            <span>Design by Ishwor</span>
+        </div>
+    </div>
+
+    <script>
+        // Theme toggle functionality
+        const themeSwitch = document.getElementById('themeSwitch');
+        const themeIcon = document.getElementById('themeIcon');
+        const themeText = document.getElementById('themeText');
+        const html = document.documentElement;
+
+        // Load saved theme preference
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        html.setAttribute('data-theme', savedTheme);
+        updateThemeUI(savedTheme);
+
+        themeSwitch.addEventListener('change', function() {
+            const newTheme = this.checked ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeUI(newTheme);
+        });
+
+        function updateThemeUI(theme) {
+            if (theme === 'light') {
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Light';
+                themeSwitch.checked = true;
+            } else {
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Dark';
+                themeSwitch.checked = false;
+            }
+        }
+
+        // Calculator logic
+        function calc() {
+            const act = parseFloat(document.getElementById('act').value) || 0;
+            const mrc = parseFloat(document.getElementById('mrc').value) || 0;
+
+            if (act <= 0 || mrc <= 0) return;
+
+            // === PER ACTIVATION CALCULATIONS ===
+            const mrcPayPerAct = 3 * mrc;
+            const dealerSpiffPerAct = 10;
+            const frontlinePerAct = 10;
+            const netUpfrontPerAct = mrcPayPerAct + dealerSpiffPerAct;
+            
+            const monthlyResPerAct = 0.03 * mrc;
+            const totalResPerAct = monthlyResPerAct * 23;
+            const perActTotal = netUpfrontPerAct + totalResPerAct;
+
+            // === TOTAL CALCULATIONS ===
+            const totalUpfront = netUpfrontPerAct * act;
+            const totalMrcPay = mrcPayPerAct * act;
+            const totalSpiff = dealerSpiffPerAct * act;
+            const totalFrontline = frontlinePerAct * act;
+            const totalMonthlyRes = monthlyResPerAct * act;
+            const allRes = totalResPerAct * act;
+            const grandTotal = totalUpfront + allRes;
+
+            // === UPDATE DISPLAY ===
+            document.getElementById('total').textContent = '$' + Math.round(grandTotal).toLocaleString();
+            document.getElementById('perAct').textContent = '$' + perActTotal.toFixed(2);
+            document.getElementById('upfront').textContent = '$' + Math.round(totalUpfront).toLocaleString();
+            document.getElementById('mrcPay').textContent = '$' + Math.round(totalMrcPay).toLocaleString();
+            document.getElementById('spiffTotal').textContent = '$' + Math.round(totalSpiff).toLocaleString();
+            document.getElementById('monthlyRes').textContent = '$' + totalMonthlyRes.toFixed(2);
+            document.getElementById('totalRes').textContent = '$' + Math.round(allRes).toLocaleString();
+            
+            document.getElementById('bdMrc').textContent = '$' + Math.round(totalMrcPay).toLocaleString();
+            document.getElementById('bdSpiff').textContent = '$' + Math.round(totalSpiff).toLocaleString();
+            document.getElementById('bdFront').textContent = '-$' + Math.round(totalFrontline).toLocaleString();
+            document.getElementById('bdNet').textContent = '$' + Math.round(totalUpfront).toLocaleString();
+        }
+
+        // Live update on input change
+        document.getElementById('act').addEventListener('input', calc);
+        document.getElementById('mrc').addEventListener('input', calc);
+
+        // Initial calculation
+        window.addEventListener('load', calc);
+    </script>
+</body>
+</html>
