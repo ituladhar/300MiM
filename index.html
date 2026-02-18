@@ -15,11 +15,13 @@
             --bg-secondary: rgba(255,255,255,0.02);
             --bg-card: rgba(255,255,255,0.03);
             --bg-input: rgba(255,255,255,0.05);
+            --bg-warning: rgba(234, 179, 8, 0.1);
             --border-color: rgba(255,255,255,0.08);
             --border-focus: #ec4899;
             --text-primary: #ffffff;
             --text-secondary: rgba(255,255,255,0.5);
             --text-muted: rgba(255,255,255,0.4);
+            --text-warning: #fde047;
             --accent-pink: #ec4899;
             --accent-purple: #a855f7;
             --accent-cyan: #06b6d4;
@@ -36,11 +38,13 @@
             --bg-secondary: rgba(255,255,255,0.8);
             --bg-card: rgba(255,255,255,0.9);
             --bg-input: rgba(0,0,0,0.05);
+            --bg-warning: rgba(234, 179, 8, 0.15);
             --border-color: rgba(0,0,0,0.1);
             --border-focus: #ec4899;
             --text-primary: #0f172a;
             --text-secondary: rgba(15,23,42,0.5);
             --text-muted: rgba(15,23,42,0.4);
+            --text-warning: #854d0e;
             --accent-pink: #db2777;
             --accent-purple: #9333ea;
             --accent-cyan: #0891b2;
@@ -280,6 +284,22 @@
             margin-top: 10px;
         }
 
+        .disclaimer {
+            grid-column: span 4;
+            background: var(--bg-warning);
+            border: 1px solid rgba(234, 179, 8, 0.3);
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 0.7em;
+            color: var(--text-warning);
+            margin-top: 15px;
+            line-height: 1.5;
+        }
+
+        .disclaimer strong {
+            font-weight: 700;
+        }
+
         .footer {
             margin-top: 15px;
             padding-top: 12px;
@@ -295,13 +315,14 @@
             .metric.main { grid-column: span 2; }
             .breakdown { grid-column: span 2; grid-template-columns: repeat(2, 1fr); }
             .info-box { grid-column: span 2; }
+            .disclaimer { grid-column: span 2; }
         }
     </style>
 </head>
 <body>
     <div class="card">
         <div class="header">
-            <h1>MIM Compensation </h1>
+            <h1>MIM COMP</h1>
             <label class="theme-toggle" title="Toggle theme">
                 <input type="checkbox" id="themeSwitch">
                 <span class="toggle-icon" id="themeIcon">🌙</span>
@@ -390,11 +411,15 @@
             <div class="info-box">
                 💡 <strong>How it works:</strong> 300% of MRC upfront + $20 spiff (50% to dealer = $10) + 3% monthly residual for up to 23 months. All upfront payments subject to 120-day chargeback. Residuals have NO chargeback.
             </div>
+
+            <div class="disclaimer">
+                ⚠️ This calculator provides an <strong>estimate</strong> of potential compensation based on the inputs provided and historical compensation factors. <strong>Actual earnings may vary</strong> and are subject to final audit, official compensation plans, and policy changes. This tool is for informational and planning purposes only and does not constitute a guarantee of income.
+            </div>
         </div>
 
         <div class="footer">
             <span>Effective: 2/1/26-2/28/26 • Smartphone Equality eligible accounts only</span>
-            <span>Design by Ishwor</span>
+            <span>Created by Ishwor Tuladhar</span>
         </div>
     </div>
 
